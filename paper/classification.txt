@@ -1,0 +1,8 @@
+1 Services of cloud computing - Infrastructure, platform, software as a service (IaaS, PaaS, SaaS)
+2 Models of cloud computing - Public, private, hybrid.  Also smaller deployment models like community, distributed, intercloud, multicloud
+3 Architecture
+4 Service Level Agreements (SLAs) - How to standardize SLAs dealing with priveleged access, regulatory compliance, data location, etc. 
+5 Main security vulnerabilities - Divided by model, reliability, availability, complexity, etc
+6 Possible solutions to big security threats
+7 Legal issues
+8 Current limitations and the future of cloud computing

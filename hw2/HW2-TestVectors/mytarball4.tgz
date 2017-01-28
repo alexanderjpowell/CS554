@@ -1,0 +1,79 @@
+// Hill.c : Hill cipher encryption code for Chosen Plain Text attack 
+// Written by Attila Altay Yavuz in 01 September 2008
+// This program takes paramters in the format: Hill "inputfile" "outputfile"
+// Input file only contains characters between A-Z, no space, numberx etc. Output file includes encrypted characters 
+//(including encrypted padding characters)
+
+#include <stdio.h>
+#include <math.h>
+#include <stdlib.h>
+
+int main(int argc, char* argv[])
+{
+  FILE *plaintext, *ciphertext;
+  char ch;
+  int i=0,n,asc,zz=10;
+  // input and ouput buffers are limited to 1000 characters. Thus, plaintext file should not be larger than 1000 characters
+  int input_buffer[1005], output_buffer[1005];
+  //Invertible 3x3 key matrix  
+  int K[3][3] = {{10, 5, 12}, {3, 14, 21}, {8, 9, 11}};
+  printf("\n");
+  printf("Hill Cipher Encryption for Chosen Plaintext Attack\n\n");
+  printf("This is just a reminder for the format of input file: The input file(plaintext file) should only include characters between A-Z (A->0, B->1, ... , Z->25 under mod 26, respectively).\n"); 
+ printf("It should NOT include space character, numbers, etc... The file should include all characters in a single line (no feed line character). The input file should be limited to 1000 characters.\n\n");
+ 
+  if((plaintext = fopen(argv[1],"r"))==NULL) {
+    printf("Cannot open the plaintext file. Please check naming of the plaintext file\n");
+    exit(1);
+  };
+
+  //Read plaintext file, check whether it is compatible with A-Z range and put them into buffer for encryption
+  while( (( ch = fgetc(plaintext) ) != EOF ) && ( (int)ch != 10) && (i<1000)) {
+        asc=(int)ch-65;
+	if ((asc>=0) && (asc<=25)){
+		input_buffer[i]=asc;
+	    i++;}
+	else{
+		printf("Invalid character in the plaintext file, the plaintext file should only include, characters from A-Z, no white space, number, etc. Buffer size is limited to 1000 character. Press any key to exit\n\n");
+		scanf("%c", &ch);
+		exit(1);
+   }
+  }
+  fclose(plaintext);
+
+  // Padding is done here. m=3 so there are only 3 cases
+  n= i % 3;
+  if (n==1) {
+	  input_buffer[i] = 2;
+	  input_buffer[i+1]	= 2;
+	  n=i+2;}
+  else if (n==2){
+	  input_buffer[i] = 1;
+	  n=i+1;
+	  } 
+  else {input_buffer[i] = 3;
+        input_buffer[i+1] = 3;
+		input_buffer[i+2] = 3;
+		n=i+3;}
+
+  // Encryption is performed here
+  for (i=0; i<n; i=i+3) {
+	output_buffer[i]=(K[0][0]*input_buffer[i] + K[0][1]*input_buffer[i+1] + K[0][2]*input_buffer[i+2]) % 26 + 65;
+	output_buffer[i+1]=(K[1][0]*input_buffer[i] + K[1][1]*input_buffer[i+1] + K[1][2]*input_buffer[i+2]) % 26 + 65;
+	output_buffer[i+2]=(K[2][0]*input_buffer[i] + K[2][1]*input_buffer[i+1] + K[2][2]*input_buffer[i+2]) % 26 + 65;
+  }
+   
+   if((ciphertext = fopen(argv[2],"w"))==NULL) {
+    printf("Cannot open the ciphertext file.\n");
+    exit(1);}
+
+   for(i=0; i<n; i++){
+	   putc((char)output_buffer[i], ciphertext);}
+   
+   putc((char)zz,ciphertext);
+  fclose(ciphertext);
+  
+  printf("\n\n");
+  printf("The encryption has been completed and the result has been recorded to the ciphertext file. Please see the ciphertext file\n\n");
+	return 0;
+}
